@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -wKU
 
 ## Example usage:
-##   ruby script/gentiles.rb -b All -s Biome,Map,Slope -z All -o ~/Applications/KSP 1.7.3/GameData/Sigma/Cartographer/Settings.cfg
+##   ruby script/gentiles.rb -b All -s Biome,Map,Slope -z All -o "~/Applications/KSP 1.7.3/GameData/Sigma/Cartographer/Settings.cfg"
 ## followed by
 ##   pushd ~/Downloads/kerbal-maps && aws s3 cp tiles/ s3://kerbal-maps/tiles/ --recursive --exclude ".DS_Store" --include "*.png"
 
@@ -178,30 +178,55 @@ END_OF_TEXT
 
 options.bodies.each do |body|
   options.zoom_levels.each do |zoom_level|
-    options.output_file.puts <<-END_OF_TEXT
+    if options.styles.include?("Biome") || options.styles.include?("Map")
+      options.output_file.puts <<-END_OF_TEXT
+  Maps
+  {
+    body = #{body}
+    biomeMap = #{options.styles.include?("Biome") && (zoom_level == 0)}
+    colorMap = false
+    heightMap = false
+    normalMap = false
+    oceanMap = false
+    slopeMap = false
+    satelliteBiome = #{options.styles.include?("Biome")}
+    satelliteHeight = false
+    satelliteMap = #{options.styles.include?("Map")}
+    satelliteSlope = false
+    oceanFloor = false
+    width = #{512 * 2**zoom_level}
+    tile = 256
+    exportFolder = #{zoom_level}
+    leaflet = false
+  }
+      END_OF_TEXT
+    end
+
+    if options.styles.include?("Height") || options.styles.include?("Normal") || options.styles.include?("Ocean") || options.styles.include?("Slope")
+      options.output_file.puts <<-END_OF_TEXT
   Maps
   {
     body = #{body}
     biomeMap = false
     colorMap = false
     heightMap = false
-    normalMap = #{options.styles.include?("Normal").to_s}
-    oceanMap = #{options.styles.include?("Ocean").to_s}
+    normalMap = #{options.styles.include?("Normal")}
+    oceanMap = #{options.styles.include?("Ocean")}
     slopeMap = false
-    satelliteBiome = #{options.styles.include?("Biome").to_s}
-    satelliteHeight = #{options.styles.include?("Height").to_s}
-    satelliteMap = #{options.styles.include?("Map").to_s}
-    satelliteSlope = #{options.styles.include?("Slope").to_s}
+    satelliteBiome = false
+    satelliteHeight = #{options.styles.include?("Height")}
+    satelliteMap = false
+    satelliteSlope = #{options.styles.include?("Slope")}
     oceanFloor = true
     width = #{512 * 2**zoom_level}
     tile = 256
     exportFolder = #{zoom_level}
     leaflet = false
   }
-    END_OF_TEXT
+      END_OF_TEXT
+    end
   end
 end
-# oceanFloor = #{options.styles.include?("Ocean").to_s}?
 
 options.output_file.puts <<-END_OF_TEXT
 }

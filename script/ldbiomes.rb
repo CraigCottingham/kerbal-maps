@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -wKU
 
 ## Example usage:
-##   ruby script/ldbiomes.rb -p "JNSQ" ~/Applications/KSP 1.7.3/GameData/Sigma/Cartographer/PluginData > jnsq.sql
+##   ruby script/ldbiomes.rb -p "JNSQ" "~/Applications/KSP 1.7.3/GameData/Sigma/Cartographer/PluginData" > jnsq.sql
 
 require "find"
 require "json"
