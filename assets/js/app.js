@@ -345,13 +345,13 @@ window.changeSelectedStyle = (value) => {
   }
 }
 
-import MapBodyAndStyle from "./components/MapBodyAndStyle.js"
+import MapPackBodyAndStyle from "./components/MapPackBodyAndStyle.js"
 ReactDOM.render(
-  <MapBodyAndStyle
+  <MapPackBodyAndStyle
     onPackChange = { window.changeSelectedPack }
     onBodyChange = { window.changeSelectedBody }
     onStyleChange = { window.changeSelectedStyle }
-  />, document.getElementById("map-body-and-style")
+  />, document.getElementById("map-pack-body-and-style")
 )
 
 window.overlays = {}

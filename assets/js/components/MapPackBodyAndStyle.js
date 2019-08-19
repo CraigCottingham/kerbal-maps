@@ -3,7 +3,7 @@ import MapBody from "./MapBody.js"
 import MapPack from "./MapPack.js"
 import MapStyle from "./MapStyle.js"
 
-class MapBodyAndStyle extends React.Component {
+class MapPackBodyAndStyle extends React.Component {
   constructor (props) {
     super(props)
 
@@ -56,4 +56,4 @@ class MapBodyAndStyle extends React.Component {
   }
 }
 
-export default MapBodyAndStyle
+export default MapPackBodyAndStyle
