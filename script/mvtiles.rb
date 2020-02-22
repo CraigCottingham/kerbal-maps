@@ -4,14 +4,15 @@ require "fileutils"
 require "optparse"
 
 class Options
-  attr_accessor :bodies, :copy_only, :dry_run, :from_path, :to_path
+  attr_accessor :bodies, :copy_only, :dry_run, :from_path, :to_path, :zoom_levels
 
   def initialize
     self.bodies = []
-    self.from_path = File.expand_path(".")
-    self.to_path = File.expand_path("~/Downloads/kerbal-maps/tiles")
     self.copy_only = false
     self.dry_run = false
+    self.from_path = File.expand_path(".")
+    self.to_path = File.expand_path("~/Downloads/kerbal-maps/tiles")
+    self.zoom_levels = (0..7).to_a
   end
 
   def define_options(parser)
@@ -25,6 +26,7 @@ class Options
     set_dry_run_option(parser)
     set_from_path_option(parser)
     set_to_path_option(parser)
+    set_zoom_levels_option(parser)
 
     parser.separator ""
     parser.separator "Common options:"
@@ -88,6 +90,24 @@ class Options
     end
   end
 
+  def set_zoom_levels_option(parser)
+    parser.on("-z ZOOM_LEVELS", "--zoom_levels=ZOOM_LEVELS", Array,
+              "Zoom levels for which to generate map tiles",
+              "(default is all)") do |zoom_levels|
+      self.zoom_levels = zoom_levels.map do |zl|
+                           case zl
+                           when "All"
+                             (0..7).to_a
+                           when /^\d(?:-|\.\.)\d$/
+                             (start_value, end_value) = zl.split(/-|\.\./, 2)
+                             (start_value.to_i..end_value.to_i).to_a
+                           else
+                             zl.to_i
+                           end
+                         end.flatten
+    end
+  end
+
   def self.parse(args)
     options = Options.new
 
@@ -111,6 +131,7 @@ FileUtils.cd(options.from_path) do
   Dir.glob("**/*.png").each do | src_filename |
     (body, zoom, raw_style, _filename) = src_filename.split("/")
     next unless (options.bodies.empty? || options.bodies.include?(body))
+    next unless (options.zoom_levels.empty? || options.zoom_levels.include?(zoom.to_i))
 
     style = case raw_style
             when "ColorMap"
