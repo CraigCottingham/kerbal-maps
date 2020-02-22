@@ -9,14 +9,18 @@ DOCKER_TAG_LATEST := $(PROJECT_NAME):latest
 FULL_DOCKER_TAG := finitemonkeys/$(DOCKER_TAG)
 DATABASE_USER := postgres
 DATABASE_PASSWORD := development
-DATABASE_URL := postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@localhost:5432/kerbal_maps
-DATABASE_URL_TEST := postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@localhost:5432/kerbal_maps_test
+DATABASE_NAME := kerbal_maps
+DATABASE_NAME_TEST := kerbal_maps_test
+DATABASE_URL := postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@localhost:5432/$(DATABASE_NAME)
+DATABASE_URL_TEST := postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@localhost:5432/$(DATABASE_NAME_TEST)
 
 db_create:
 	docker run --name=postgres-kerbal-maps -p 5432:5432 -e POSTGRES_USER=$(DATABASE_USER) -e POSTGRES_PASSWORD=$(DATABASE_PASSWORD) -d postgres:10.9-alpine
 	script/wait-for-it localhost:5432 -- sleep 3
-	psql -c "CREATE DATABASE kerbal_maps;" postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@localhost:5432/template1
-	MIX_ENV=test DATABASE_URL=${DATABASE_URL_TEST} mix ecto.setup
+	psql -c "CREATE DATABASE $(DATABASE_NAME);" postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@localhost:5432/template1
+	MIX_ENV=dev DATABASE_URL=$(DATABASE_URL) mix ecto.setup
+	psql -c "CREATE DATABASE $(DATABASE_NAME_TEST);" postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@localhost:5432/template1
+	MIX_ENV=test DATABASE_URL=$(DATABASE_URL_TEST) mix ecto.setup
 	docker stop postgres-kerbal-maps
 
 db_drop:
@@ -25,14 +29,17 @@ db_drop:
 
 develop:
 	docker start postgres-kerbal-maps
+	script/wait-for-it localhost:5432 -- sleep 3
 	DATABASE_URL=$(DATABASE_URL)                                                         \
 		ERLANG_COOKIE=kerbal_maps                                                          \
 		SECRET_KEY_BASE="iHKHiC1uLovaKtckLv5FhYl5lUpTYiONenuNWHZOLgvAEJwJavoBZ0sof5+TDfgc" \
 	  TILE_CDN_URL=https://d3kmnwgldcmvsd.cloudfront.net/tiles                           \
 		mix phx.server
+	docker stop postgres-kerbal-maps
 
 test:
 	docker start postgres-kerbal-maps
+	script/wait-for-it localhost:5432 -- sleep 3
 	DATABASE_URL=$(DATABASE_URL_TEST) mix test
 	docker stop postgres-kerbal-maps
 
@@ -75,4 +82,4 @@ buildinfo_file:
 version_file:
 	echo "$(TAG_NAME)" > VERSION
 
-.PHONY: develop build run push deploy clean buildinfo_file version_file
+.PHONY: build buildinfo_file clean db_create db_drop deploy develop push run test version_file
