@@ -21,8 +21,7 @@ PLANET_PACKS = {
   jnsq: %w(
     Moho
     Eve Gilly
-    Kerbin Mun
-    Minmus
+    Kerbin Mun Minmus
     Duna Ike
     Edna Dak
     Dres

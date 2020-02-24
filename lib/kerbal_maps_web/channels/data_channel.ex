@@ -16,7 +16,10 @@ defmodule KerbalMapsWeb.DataChannel do
   alias Phoenix.Socket
 
   def join("data:" <> observed_id, _payload, socket) do
-    observed_user = Users.get_user!(String.to_integer(observed_id))
+    observed_user =
+      observed_id
+      |> String.to_integer()
+      |> Users.get_user!()
 
     if observed_user && observed_user.id == socket.assigns[:user_id] do
       ## save user.id under a different key in Socket.assign?
@@ -30,20 +33,33 @@ defmodule KerbalMapsWeb.DataChannel do
   end
 
   def handle_in("get_all_biomes", payload, socket) do
-    celestial_body = Map.get(payload, "body") |> StaticData.find_celestial_body_by_name()
+    celestial_body =
+      payload
+      |> Map.get("body")
+      |> StaticData.find_celestial_body_by_name()
     get_all_biomes(celestial_body, socket)
   end
 
   def handle_in("get_all_overlays", payload, socket) do
     user = socket.assigns[:observed_id] |> Users.get_user()
-    celestial_body = Map.get(payload, "body") |> StaticData.find_celestial_body_by_name()
+    celestial_body =
+      payload
+      |> Map.get("body")
+      |> StaticData.find_celestial_body_by_name()
     get_all_overlays(user, celestial_body, socket)
   end
 
   def handle_in("get_overlay", payload, socket) do
-    overlay_id = Map.get(payload, "id")
-    overlay = Symbols.get_overlay!(overlay_id) |> to_json()
+    overlay =
+      payload
+      |> Map.get("id")
+      |> Symbols.get_overlay!()
+      |> to_json()
     {:reply, {:ok, %{overlay: overlay}}, socket}
+  end
+
+  def handle_in("get_all_planet_packs", _payload, socket) do
+    get_all_planet_packs(socket)
   end
 
   def handle_in("parse_search", payload, socket) do
@@ -76,6 +92,12 @@ defmodule KerbalMapsWeb.DataChannel do
       |> Enum.map(&to_json/1)
 
     {:reply, {:ok, %{overlays: overlays}}, socket}
+  end
+
+  defp get_all_planet_packs(socket) do
+    packs = StaticData.list_planet_packs()
+
+    {:reply, {:ok, %{planet_packs: packs}}, socket}
   end
 
   defp_testable to_json(%Marker{} = marker) do

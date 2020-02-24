@@ -27,13 +27,17 @@ db_drop:
 	docker stop postgres-kerbal-maps
 	docker rm postgres-kerbal-maps
 
+db_console:
+	docker start postgres-kerbal-maps
+	psql $(DATABASE_URL)
+
 develop:
 	docker start postgres-kerbal-maps
 	script/wait-for-it localhost:5432 -- sleep 3
 	DATABASE_URL=$(DATABASE_URL)                                                         \
 		ERLANG_COOKIE=kerbal_maps                                                          \
 		SECRET_KEY_BASE="iHKHiC1uLovaKtckLv5FhYl5lUpTYiONenuNWHZOLgvAEJwJavoBZ0sof5+TDfgc" \
-	  TILE_CDN_URL=https://d3kmnwgldcmvsd.cloudfront.net/tiles                           \
+	  TILE_CDN_URL=https://d3kmnwgldcmvsd.cloudfront.net                                 \
 		mix phx.server
 	docker stop postgres-kerbal-maps
 
@@ -51,7 +55,7 @@ run:
 	           -e ERLANG_COOKIE=kerbal_maps                                                          \
 						 -e HOSTNAME=localhost PORT=8080                                                       \
 						 -e SECRET_KEY_BASE="iHKHiC1uLovaKtckLv5FhYl5lUpTYiONenuNWHZOLgvAEJwJavoBZ0sof5+TDfgc" \
-						 -e TILE_CDN_URL=https://d3kmnwgldcmvsd.cloudfront.net/tiles                           \
+						 -e TILE_CDN_URL=https://d3kmnwgldcmvsd.cloudfront.net                                 \
 	           -p 8080:8080 --rm -it --name kerbal_maps -d                                           \
 				     $(DOCKER_TAG_LATEST)
 

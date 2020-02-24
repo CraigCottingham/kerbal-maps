@@ -43,12 +43,17 @@ query params
       * `DATABASE_URL` - something like `postgres://username:password@host:port/database`
       * `ERLANG_COOKIE` - can be anything, as far as I know
       * `SECRET_KEY_BASE` - get by running `mix phx.gen.secret`
-      * `TILE_CDN_URL` - base URL to where the map tiles are stored, up to but not including the body name, with no trailing slash
+      * `TILE_CDN_URL` - base URL to where the map tiles are stored, up to but not including the pack name or `tiles`, with no trailing slash
    6. `heroku login`
    7. `heroku git:remote -a kerbal-maps`
    8. `heroku container:login`
    9. `heroku container:push web`
   10. `heroku container:release web`
+
+#### Resetting the database
+
+    heroku pg:reset
+    heroku pg:push postgres://postgres@localhost/kerbal_maps_dev DATABASE_URL -a kerbal-maps
 
 ## GENERATING THE MAP TILES
 

@@ -65,8 +65,19 @@ function addOverlaysToList(channel, paneId) {
   }
 }
 
+function baseURL(pack) {
+  let base = window.tileCdnURL
+
+  switch (pack) {
+    case "2":
+      base = `${window.tileCdnURL}/jnsq`
+  }
+
+  return `${base}/tiles`
+}
+
 function createTileLayer() {
-  window.tileLayer = L.tileLayer(`${window.tileCdnURL}/{body}/{style}/{z}/{x}/{y}.png`, {
+  window.tileLayer = L.tileLayer(`${baseURL(window.selectedPack)}/{body}/{style}/{z}/{x}/{y}.png`, {
     // *** TileLayer options
     // minZoom: 0,
     maxZoom: 7,
@@ -141,6 +152,20 @@ function loadBiomesForBody(channel, legend, body) {
 
     legend.removeLegend(legend._lastId)
     legend.addLegend({name: 'Biomes', elements: elements})
+  })
+}
+
+function loadPlanetPacks(channel) {
+  channel.push("get_planet_packs", {}).receive("ok", response => {
+    var elements = response.planet_packs.reduce((acc, pack) => {
+      acc.push({
+        label: pack.name,
+        value: pack.id
+      })
+      return acc
+    }, [])
+
+    return elements
   })
 }
 
@@ -304,11 +329,10 @@ window.legendControl = new L.Control.HtmlLegend({
   visibleIcon: 'icon icon-eye',
   hiddenIcon: 'icon icon-eye-slash'
 });
-// window.map.addControl(window.legendControl)
 
 var sidebar = L.control.sidebar({container: "sidebar"}).addTo(window.map)
 
-window.selectedPack = "(stock)"
+window.selectedPack = 1
 window.selectedBody = "kerbin"
 if (window.bodyFromQuery !== undefined) {
   window.selectedBody = window.bodyFromQuery
@@ -346,11 +370,41 @@ window.changeSelectedStyle = (value) => {
 }
 
 import MapPackBodyAndStyle from "./components/MapPackBodyAndStyle.js"
+var packOptions = [
+  {value: 1, label: "(stock)"},
+  {value: 2, label: "JNSQ"}
+]
+var bodyOptions = [
+  {value:  1, label: "Moho"},
+  {value:  2, label: "Eve"},
+  {value:  3, label: "Gilly"},
+  {value:  4, label: "Kerbin"},
+  {value:  5, label: "Mun"},
+  {value:  6, label: "Minmus"},
+  {value:  7, label: "Duna"},
+  {value:  8, label: "Ike"},
+  {value:  9, label: "Dres"},
+  {value: 10, label: "Jool", disabled: true},
+  {value: 11, label: "Laythe"},
+  {value: 12, label: "Vall"},
+  {value: 13, label: "Tylo"},
+  {value: 14, label: "Bop"},
+  {value: 15, label: "Pol"},
+  {value: 16, label: "Eeloo"}
+]
+var styleOptions = [
+  {value: "biome", label: "Biome"},
+  {value: "sat", label: "Satellite"},
+  {value: "slope", label: "Slope"},
+]
 ReactDOM.render(
   <MapPackBodyAndStyle
-    onPackChange = { window.changeSelectedPack }
-    onBodyChange = { window.changeSelectedBody }
-    onStyleChange = { window.changeSelectedStyle }
+    packOptions={ packOptions }
+    onPackChange={ window.changeSelectedPack }
+    bodyOptions={ bodyOptions }
+    onBodyChange={ window.changeSelectedBody }
+    styleOptions={ styleOptions }
+    onStyleChange={ window.changeSelectedStyle }
   />, document.getElementById("map-pack-body-and-style")
 )
 

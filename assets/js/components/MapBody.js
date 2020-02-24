@@ -4,6 +4,27 @@ class MapBody extends React.Component {
   constructor (props) {
     super(props)
     this.changeValue = this.changeValue.bind(this)
+    this.options = this.props.options
+    if (this.options === undefined) {
+      this.options = [
+        { value:  1, label: "Moho" },
+        { value:  2, label: "Eve" },
+        { value:  3, label: "Gilly" },
+        { value:  4, label: "Kerbin" },
+        { value:  5, label: "Mun" },
+        { value:  6, label: "Minmus" },
+        { value:  7, label: "Duna" },
+        { value:  8, label: "Ike" },
+        { value:  9, label: "Dres" },
+        { value: 10, label: "Jool", disabled: true },
+        { value: 11, label: "Laythe" },
+        { value: 12, label: "Vall" },
+        { value: 13, label: "Tylo" },
+        { value: 14, label: "Bop" },
+        { value: 15, label: "Pol" },
+        { value: 16, label: "Eeloo" }
+      ]
+    }
   }
 
   changeValue (event) {
@@ -12,30 +33,19 @@ class MapBody extends React.Component {
 
   render () {
     const selectedValue = this.props.selectedValue
+    const options = this.options.map((option) =>
+      <option key={ "body_" + option.value } value={ option.value } disabled={ option.disabled ? true : false }>{ option.label }</option>
+    )
+
     return (
       <div className="form-group">
         <label htmlFor="select-map-body">Body</label>
         <select id="select-map-body"
                 name="select-map-body"
-                value={selectedValue}
+                value={ selectedValue }
                 className="form-control"
-                onChange={this.changeValue}>
-          <option value="moho">Moho</option>
-          <option value="eve">Eve</option>
-          <option value="gilly">Gilly</option>
-          <option value="kerbin">Kerbin</option>
-          <option value="mun">Mun</option>
-          <option value="minmus">Minmus</option>
-          <option value="duna">Duna</option>
-          <option value="ike">Ike</option>
-          <option value="dres">Dres</option>
-          <option value="jool" disabled={true}>Jool</option>
-          <option value="laythe">Laythe</option>
-          <option value="vall">Vall</option>
-          <option value="tylo">Tylo</option>
-          <option value="bop">Bop</option>
-          <option value="pol">Pol</option>
-          <option value="eeloo">Eeloo</option>
+                onChange={ this.changeValue }>
+          { options }
         </select>
       </div>
     )
