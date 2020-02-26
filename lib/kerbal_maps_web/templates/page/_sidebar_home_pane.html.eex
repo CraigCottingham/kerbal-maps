@@ -66,12 +66,22 @@
             <a href="https://github.com/WizardOfOgz">Andy Ogzewalla</a>
             for JS mentorship, wizardry, and general awesomeness
           </li>
+          <li>
+            <a href="https://forum.kerbalspaceprogram.com/index.php?/profile/202640-rowbear/">RowBear</a>
+            for contributing CPU cycles and person-hours to extracting map tiles for the JNSQ planet pack
+          </li>
         </ul>
         <p>kerbal maps is a <a href="http://finitemonkeys.org/">finitemonkeys</a> joint</p>
         <p>
           Copyright © 2018-2019 Craig S. Cottingham and subject to
           <a href="http://www.apache.org/licenses/LICENSE-2.0">the Apache License, Version 2.0</a>,
           except where stated otherwise.
+        </p>
+        <p>
+          Map tiles for the
+          <a href="https://forum.kerbalspaceprogram.com/index.php?/topic/184880-181-jnsq-090-03-feb-2020/&tab=comments#comment-3608088">JNSQ</a>
+          planet pack are licensed under
+          <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/">CC BY-NC-ND 3.0</a>.
         </p>
       </div>
     </div>
